@@ -18,7 +18,7 @@ int main(){
     Inet_pton(AF_INET, "127.0.0.2", &adr.sin_addr);
     Connect(fd, (struct sockaddr *) &adr, sizeof adr);
     
-    
+   
     char client_buf_1[] = "start\n";
     write(fd, client_buf_1, sizeof client_buf_1);
     
@@ -41,14 +41,10 @@ int main(){
         write(STDOUT_FILENO, buf, nread);
         //harcum serverrin
         char client_buf[10] = "";
-        scanf("%s", client_buf);
-        
-        
-        //harcum serverrin
-        
+        scanf("%s", client_buf);        
         write(fd, client_buf, sizeof client_buf);
-               
-        nread = read(fd, buf, nread);
+        
+        nread = read(fd, buf, sizeof buf);
     }
     
 
