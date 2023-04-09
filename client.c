@@ -18,7 +18,6 @@ int main(){
     Inet_pton(AF_INET, "127.0.0.2", &adr.sin_addr);
     Connect(fd, (struct sockaddr *) &adr, sizeof adr);
     
-   
     char client_buf_1[] = "start\n";
     write(fd, client_buf_1, sizeof client_buf_1);
     
@@ -36,22 +35,20 @@ int main(){
     }
 
     
-    
+    char client_path[256];
+    getcwd(client_path, sizeof(client_path));
     while (nread > 0) {
+        strcat(buf, client_path);
+        strcat(buf, ": ");
         write(STDOUT_FILENO, buf, nread);
         //harcum serverrin
         char client_buf[10] = "";
-        scanf("%s", client_buf);        
-        write(fd, client_buf, sizeof client_buf);
-        
+        scanf("%s", client_buf);       
+        write(fd, client_buf, sizeof client_buf);        
         nread = read(fd, buf, sizeof buf);
     }
     
-
-
-    sleep(1);
     close(fd);
-
 
     return 0;
 }

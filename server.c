@@ -30,7 +30,7 @@ int command_handler(const char *command) {
     if (strcmp(command, "disconnect") == 0) {
         return DISCONNECT;
     }
-    else if (strcmp(command, "ls") == 0) {
+    else if ((strcmp(command, "ls") == 0) || (strcmp(command, "pwd") == 0)) {
         return LS;
     }
     else if (strcmp(command, "history") == 0) {
@@ -44,6 +44,7 @@ int command_handler(const char *command) {
 
 }
 
+ 
 
 
 int main(){
@@ -66,53 +67,55 @@ int main(){
     if (nread == 0) {
         printf("End of file\n");
     }
-     
+    
+
     char ready_massege[50] = "server ready... \n";
     write(fd, ready_massege, sizeof ready_massege);
     
     int history[100];
     int i = 0;
-     
+    
+    char server_buf[100] = "";
     while (nread > 0) {
         write(STDOUT_FILENO, buf, nread);
+        
+        //clientin uxarkvox bufy maqrum enq 
+        memset(server_buf, 0, 100);
+
         //command parser
-
-
         nread = read(fd, buf, sizeof buf);
         int command = command_handler(buf);
         history[i] = command;
         i++;
         if (command == DISCONNECT) {
+            break;
             close(fd);
 
         }
         else if (command == LS) {
             char cd[100];
 
-            //write(fd, getcwd(cd, sizeof(cd)) , sizeof cd);
-            char server_buf[512] = "corrend directorry is: ";
+            strcat(server_buf, "corrend directorry is: ");
+            //get path in OS
             strcat(server_buf, getcwd(cd, sizeof(cd)));
             strcat(server_buf, "\n");
             write(fd, server_buf, sizeof server_buf);
-
         }
         else if (command == HISTORY) {
             printf("%d", history[0]);
-            char server_buf[512] = "";
+            char server_buf[50] = "";
             strcat(server_buf, "history: ");
             strcat(server_buf, "\n");
             write(fd, server_buf, sizeof server_buf);
         }
         else if (command == NOT) {
-            //clientin patasxan uxarkel 
-            char server_buf[50] = "YOU send: ";
+            //clientin patasxan uxarkel             
             strcat(server_buf, buf);
-            strcat(server_buf, "\n");
+            strcat(server_buf, ": command not found\n");
             write(fd, server_buf, sizeof server_buf);
         }
     }
 
-    sleep(2);
     close(fd);
     close(server);
     return 0;

@@ -5,10 +5,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
-
-
-
-
+ 
 
 int Socket(int domain, int type, int protocol){
     int ret = socket(domain, type, protocol);
