@@ -14,7 +14,7 @@ this program establishes a TCP connection to a server running on localhost on po
 
 After establishing the connection, the program sends the string "start\n" to the server using the write() function.
 
-#### errorproc.h
+### errorproc.h
 This header file contains function declarations for Socket(), Bind(), Listen(), Accept(), Connect(), and Inet_pton().
 
 The Socket() function creates a new socket of a specified domain, type, and protocol, and returns a socket descriptor that can be used for further socket operations.
