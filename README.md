@@ -9,12 +9,12 @@ The program defines an enum type Command that represents the possible commands t
 
 
 
-##client.c
+#client.c
 this program establishes a TCP connection to a server running on localhost on port 25525 and sends messages to it. The program first creates a socket using the Socket() function, then specifies the address of the server it wants to connect to using the sockaddr_in struct. It then connects to the server using the Connect() function.
 
 After establishing the connection, the program sends the string "start\n" to the server using the write() function.
 
-##errorproc.h
+#errorproc.h
 This header file contains function declarations for Socket(), Bind(), Listen(), Accept(), Connect(), and Inet_pton().
 
 The Socket() function creates a new socket of a specified domain, type, and protocol, and returns a socket descriptor that can be used for further socket operations.
@@ -29,7 +29,7 @@ The Connect() function is used by a client to establish a connection to a server
 
 The Inet_pton() function converts a string containing an IPv4 or IPv6 address to a binary representation that can be used by network programs.
 
-## errorproc.c
+# errorproc.c
 errorproc.c file implements these functions, which print an error message to stderr and exit the program if a socket operation fails.
 
 
