@@ -14,7 +14,7 @@ int main(){
     int fd = Socket(AF_INET, SOCK_STREAM, 0);
     struct sockaddr_in adr = {0};
     adr.sin_family = AF_INET;
-    adr.sin_port = htons(50555);
+    adr.sin_port = htons(25525);
     Inet_pton(AF_INET, "127.0.0.2", &adr.sin_addr);
     Connect(fd, (struct sockaddr *) &adr, sizeof adr);
     
@@ -24,7 +24,7 @@ int main(){
     
     char buf[256];
     size_t nread;
-    nread = read(fd, buf, 50);
+    nread = read(fd, buf, sizeof(buf));
     if (nread == (size_t)-1){
         perror("Read failed");
         exit(EXIT_FAILURE);
@@ -35,17 +35,21 @@ int main(){
     }
 
     
-    char client_path[256];
+    char client_path[50];
     getcwd(client_path, sizeof(client_path));
     while (nread > 0) {
+        
+        
         strcat(buf, client_path);
         strcat(buf, ": ");
-        write(STDOUT_FILENO, buf, nread);
+        write(STDOUT_FILENO, buf, sizeof(buf));
+        
+         
         //harcum serverrin
         char client_buf[10] = "";
         scanf("%s", client_buf);       
         write(fd, client_buf, sizeof client_buf);        
-        nread = read(fd, buf, sizeof buf);
+        nread = read(fd, buf, sizeof buf );
     }
     
     close(fd);
