@@ -12,12 +12,14 @@
 
 #define CLIENT_COUNT 5
 #define HOST_NUM  25525
+#define SERVER_BUF_SIZE 256
+
 
 enum Command
 {
     CONNECT,
     DISCONNECT,
-    LS,    
+    PWD,    
     HISTORY,
     TIME,
     HOST,
@@ -28,6 +30,7 @@ enum Command
  
 char* int_to_string(const int num) {
     char *str = malloc(10);
+    // +1 for "\0" this char
     snprintf(str, sizeof(str) + 1, "%d", num);
     return str;
 }
@@ -37,8 +40,8 @@ int command_handler(const char *command) {
     if (strcmp(command, "disconnect") == 0) {
         return DISCONNECT;
     }
-    else if ((strcmp(command, "ls") == 0) || (strcmp(command, "pwd") == 0)) {
-        return LS;
+    else if ((strcmp(command, "pwd") == 0)) {
+        return PWD;
     }
     else if (strcmp(command, "history") == 0) {
         return HISTORY;
@@ -93,16 +96,18 @@ int main(){
     int history[100];
     int history_size = 0;
     
-    char server_buf[100] = "";
+    char server_buf[SERVER_BUF_SIZE] = "";
     while (nread > 0) {
-        write(STDOUT_FILENO, buf, nread);
+        write(STDOUT_FILENO, buf, nread); 
+        write(STDOUT_FILENO, "\n", 4);
         
         //clientin uxarkvox bufy maqrum enq 
-        memset(server_buf, 0, 100);
+        //hishoxutyan maqrum 
+        memset(server_buf, 0, SERVER_BUF_SIZE);
 
         //command parser
-        nread = read(fd, buf, sizeof buf);
-        int command = command_handler(buf);
+        nread = Read(fd, buf, sizeof buf);
+        int command = command_handler(buf);        
         history[history_size] = command;
         history_size++;
         if (command == DISCONNECT) {
@@ -110,39 +115,32 @@ int main(){
             close(fd);
 
         }
-        else if (command == LS) {
-            char cd[100];
+        else if (command == PWD) {
 
-            strcat(server_buf, "corrend directorry is: ");
+            memset(server_buf, 0, SERVER_BUF_SIZE);
+            
+            char tmp[256] = "";
             //get path in OS
-            strcat(server_buf, getcwd(cd, sizeof(cd)));
-            strcat(server_buf, "\n");
+            getcwd(tmp, sizeof(tmp));             
+            strcat(server_buf, tmp);
+            strcat(server_buf, "\n");            
             write(fd, server_buf, sizeof server_buf);
+             
         }
         else if (command == HISTORY) {
-            printf("%d", history[0]);
-            char server_buf[50] = "";
-            strcat(server_buf, "history: ");
+           
             for (int i = 0; i < history_size; ++i) {
-
                 strcat(server_buf, int_to_string(history[i]));
             }
 
             strcat(server_buf, "\n");
             write(fd, server_buf, sizeof server_buf);
         }
-        else if (command == TIME) {
-            
-            char server_buf[50] = "";
-            strcat(server_buf, "time: ");
+        else if (command == TIME) { 
             strcat(server_buf, get_time());
             write(fd, server_buf, sizeof server_buf);
         }
-        else if (command == HOST) {
-             
-            char server_buf[50] = "";
-            strcat(server_buf, "host: ");
-            
+        else if (command == HOST) { 
             strcat(server_buf, int_to_string(HOST_NUM));
             strcat(server_buf, "\n");
             write(fd, server_buf, sizeof server_buf);
@@ -153,6 +151,7 @@ int main(){
             strcat(server_buf, ": command not found\n");
             write(fd, server_buf, sizeof server_buf);
         }
+
     }
 
     close(fd);

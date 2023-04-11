@@ -22,5 +22,7 @@ void Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
 
 void Inet_pton(int af, const char *src, void *dst);
 
+size_t Read(int fd, void* buf, size_t size);
+
 
 #endif //!ERRORPROC_H

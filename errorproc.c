@@ -65,3 +65,23 @@ void Inet_pton(int af, const char *src, void *dst){
         exit(EXIT_FAILURE);
     }
 }
+
+
+size_t Read(int fd, void* buf, size_t size) {
+
+    
+    size_t nread;
+    nread = read(fd, buf, size);
+    if (nread == (size_t)-1){
+        perror("Read failed");
+        exit(EXIT_FAILURE);
+    }
+    if (nread == 0) {
+        printf("Eof occured\n");
+        exit(EXIT_FAILURE);
+    }
+    return nread;
+
+
+
+}
