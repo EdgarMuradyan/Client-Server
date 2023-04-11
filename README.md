@@ -9,7 +9,7 @@ The program defines an enum type Command that represents the possible commands t
 
 
 
-## client.c
+### client.c
 this program establishes a TCP connection to a server running on localhost on port 25525 and sends messages to it. The program first creates a socket using the Socket() function, then specifies the address of the server it wants to connect to using the sockaddr_in struct. It then connects to the server using the Connect() function.
 
 After establishing the connection, the program sends the string "start\n" to the server using the write() function.
