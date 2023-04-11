@@ -1,4 +1,4 @@
-#include "errorproc.h"
+#include "../errorproc.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <stdio.h>
@@ -13,7 +13,7 @@
 #define CLIENT_COUNT 5
 #define HOST_NUM  25525
 #define SERVER_BUF_SIZE 256
-
+#define HISTORY_SIZE 256
 
 enum Command
 {
@@ -23,8 +23,7 @@ enum Command
     HISTORY,
     TIME,
     HOST,
-    NOT 
-    
+    NOT    
 
 };
  
@@ -36,7 +35,7 @@ char* int_to_string(const int num) {
 }
 
 int command_handler(const char *command) {
-    //printf("%s", command);
+     
     if (strcmp(command, "disconnect") == 0) {
         return DISCONNECT;
     }
@@ -59,7 +58,35 @@ int command_handler(const char *command) {
 
 }
 
+
+char* command_to_string(int command) {
+
+    if (command == DISCONNECT) {
+        return "disconnect\n";
+    }
+    else if (command == PWD) {
+        return "pwd\n";
+    }
+    else if (command == TIME) {
+        return "time\n";
+    }
+    else if (command == HOST) {
+        return "host\n";
+    }
+    else if (command == HISTORY) {
+        return "history\n";
+    }
+    else if (command == NOT) {
+        return "error comand\n";
+    }
+    return "incorrect command\n";
+
+}
+
  
+
+
+//return time in type string
 char* get_time() { 
     time_t current_time;
     time(&current_time);
@@ -67,6 +94,7 @@ char* get_time() {
     return ctime(&current_time);
 }
 
+ 
 
 int main(){
     int server = Socket(AF_INET, SOCK_STREAM, 0);
@@ -93,7 +121,7 @@ int main(){
     char ready_massege[50] = "server ready... \n";
     write(fd, ready_massege, sizeof ready_massege);
     
-    int history[100];
+    int history[HISTORY_SIZE];
     int history_size = 0;
     
     char server_buf[SERVER_BUF_SIZE] = "";
@@ -101,24 +129,24 @@ int main(){
         write(STDOUT_FILENO, buf, nread); 
         write(STDOUT_FILENO, "\n", 4);
         
-        //clientin uxarkvox bufy maqrum enq 
-        //hishoxutyan maqrum 
+        //clean server_buf         
         memset(server_buf, 0, SERVER_BUF_SIZE);
-
+        
         //command parser
         nread = Read(fd, buf, sizeof buf);
-        int command = command_handler(buf);        
-        history[history_size] = command;
-        history_size++;
+        int command = command_handler(buf);  
+         
         if (command == DISCONNECT) {
+            history[history_size] = command;
+            history_size++;
             break;
             close(fd);
 
         }
         else if (command == PWD) {
-
+            history[history_size] = command;
+            history_size++;
             memset(server_buf, 0, SERVER_BUF_SIZE);
-            
             char tmp[256] = "";
             //get path in OS
             getcwd(tmp, sizeof(tmp));             
@@ -128,25 +156,29 @@ int main(){
              
         }
         else if (command == HISTORY) {
-           
+            history[history_size] = command;
+            history_size++;
             for (int i = 0; i < history_size; ++i) {
-                strcat(server_buf, int_to_string(history[i]));
+                strcat(server_buf, command_to_string(history[i]));
             }
 
             strcat(server_buf, "\n");
             write(fd, server_buf, sizeof server_buf);
         }
         else if (command == TIME) { 
+            history[history_size] = command;
+            history_size++;
             strcat(server_buf, get_time());
             write(fd, server_buf, sizeof server_buf);
         }
         else if (command == HOST) { 
+            history[history_size] = command;
+            history_size++;
             strcat(server_buf, int_to_string(HOST_NUM));
             strcat(server_buf, "\n");
             write(fd, server_buf, sizeof server_buf);
         }
         else if (command == NOT) {
-            //clientin patasxan uxarkel             
             strcat(server_buf, buf);
             strcat(server_buf, ": command not found\n");
             write(fd, server_buf, sizeof server_buf);
